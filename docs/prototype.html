@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HotNews - 设计原型</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: #F9FAFB;
+      color: #1F2937;
+      line-height: 1.5;
+    }
+
+    /* 顶部导航 */
+    .navbar {
+      background: white;
+      border-bottom: 1px solid #E5E7EB;
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+      color: #3B82F6;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 32px;
+    }
+
+    .nav-tab {
+      font-size: 15px;
+      color: #6B7280;
+      cursor: pointer;
+      padding: 8px 16px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .nav-tab:hover {
+      background: #F3F4F6;
+      color: #3B82F6;
+    }
+
+    .nav-tab.active {
+      background: #3B82F6;
+      color: white;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 8px 24px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: #3B82F6;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #2563EB;
+      box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-secondary {
+      background: white;
+      color: #3B82F6;
+      border: 1px solid #3B82F6;
+    }
+
+    .btn-secondary:hover {
+      background: #EFF6FF;
+    }
+
+    /* 工具栏 */
+    .toolbar {
+      background: white;
+      border-bottom: 1px solid #E5E7EB;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .category-filter {
+      display: flex;
+      gap: 8px;
+    }
+
+    .category-chip {
+      padding: 6px 16px;
+      background: white;
+      border: 1px solid #D1D5DB;
+      border-radius: 20px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .category-chip:hover {
+      border-color: #3B82F6;
+      color: #3B82F6;
+    }
+
+    .category-chip.active {
+      background: #3B82F6;
+      color: white;
+      border-color: #3B82F6;
+    }
+
+    .toolbar-spacer {
+      flex: 1;
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      border: 1px solid #D1D5DB;
+      background: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .icon-btn:hover {
+      background: #F3F4F6;
+      border-color: #3B82F6;
+    }
+
+    /* 主内容区 */
+    .main-content {
+      padding: 24px;
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    .source-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 20px;
+    }
+
+    /* 内容源卡片 */
+    .source-card {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid #E5E7EB;
+      overflow: hidden;
+      transition: all 0.3s;
+      animation: fadeInUp 0.5s ease forwards;
+      opacity: 0;
+    }
+
+    .source-card:hover {
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
+    }
+
+    .source-card:nth-child(1) { animation-delay: 0.1s; }
+    .source-card:nth-child(2) { animation-delay: 0.2s; }
+    .source-card:nth-child(3) { animation-delay: 0.3s; }
+    .source-card:nth-child(4) { animation-delay: 0.4s; }
+    .source-card:nth-child(5) { animation-delay: 0.5s; }
+    .source-card:nth-child(6) { animation-delay: 0.6s; }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card-header {
+      padding: 16px;
+      border-bottom: 1px solid #E5E7EB;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .source-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .source-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: white;
+    }
+
+    .source-details h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .source-meta {
+      font-size: 12px;
+      color: #6B7280;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .follow-btn {
+      padding: 6px 16px;
+      background: white;
+      border: 1px solid #D1D5DB;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .follow-btn:hover {
+      border-color: #3B82F6;
+      color: #3B82F6;
+    }
+
+    .follow-btn.following {
+      background: #3B82F6;
+      color: white;
+      border-color: #3B82F6;
+    }
+
+    .card-body {
+      padding: 16px;
+    }
+
+    .article-item {
+      padding: 12px 0;
+      border-bottom: 1px solid #F3F4F6;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .article-item:last-child {
+      border-bottom: none;
+    }
+
+    .article-item:hover {
+      background: #F9FAFB;
+      margin: 0 -16px;
+      padding: 12px 16px;
+    }
+
+    .article-title {
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 6px;
+      color: #1F2937;
+    }
+
+    .article-meta {
+      font-size: 12px;
+      color: #6B7280;
+      display: flex;
+      gap: 12px;
+    }
+
+    .card-footer {
+      padding: 12px 16px;
+      border-top: 1px solid #E5E7EB;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .action-btn {
+      padding: 6px 12px;
+      background: white;
+      border: 1px solid #D1D5DB;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .action-btn:hover {
+      background: #F3F4F6;
+    }
+
+    /* 空状态 */
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+    }
+
+    .empty-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+
+    .empty-state h3 {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .empty-state p {
+      color: #6B7280;
+      margin-bottom: 24px;
+    }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 0 16px;
+      }
+
+      .nav-tabs {
+        gap: 16px;
+      }
+
+      .nav-tab {
+        padding: 6px 12px;
+        font-size: 14px;
+      }
+
+      .main-content {
+        padding: 16px;
+      }
+
+      .source-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <nav class="navbar">
+    <div class="logo">
+      🔥 HotNews
+    </div>
+
+    <div class="nav-tabs">
+      <div class="nav-tab">更多</div>
+      <div class="nav-tab">关注</div>
+      <div class="nav-tab active">最热</div>
+      <div class="nav-tab">实时</div>
+    </div>
+
+    <div class="nav-actions">
+      <button class="btn btn-secondary">登录</button>
+      <button class="btn btn-primary">开始使用</button>
+    </div>
+  </nav>
+
+  <!-- 工具栏 -->
+  <div class="toolbar">
+    <div class="category-filter">
+      <div class="category-chip active">全部</div>
+      <div class="category-chip">科技</div>
+      <div class="category-chip">开发者</div>
+      <div class="category-chip">财经</div>
+      <div class="category-chip">生活</div>
+    </div>
+
+    <div class="toolbar-spacer"></div>
+
+    <button class="icon-btn" title="刷新">🔄</button>
+    <button class="icon-btn" title="设置">⚙️</button>
+  </div>
+
+  <!-- 主内容区 -->
+  <main class="main-content">
+    <div class="source-grid">
+      <!-- V2EX 卡片 -->
+      <div class="source-card">
+        <div class="card-header">
+          <div class="source-info">
+            <div class="source-icon" style="background: #333333;">💬</div>
+            <div class="source-details">
+              <h3>V2EX</h3>
+              <div class="source-meta">
+                <span>更新于 5分钟前</span>
+                <span>•</span>
+                <span>128条新内容</span>
+              </div>
+            </div>
+          </div>
+          <button class="follow-btn following">已关注</button>
+        </div>
+
+        <div class="card-body">
+          <div class="article-item">
+            <div class="article-title">Python 3.12 发布，性能提升30%，新特性一览</div>
+            <div class="article-meta">
+              <span>41分钟前</span>
+              <span>•</span>
+              <span>128条评论</span>
+            </div>
+          </div>
+
+          <div class="article-item">
+            <div class="article-title">求推荐靠谱的云服务器，用于部署个人项目</div>
+            <div class="article-meta">
+              <span>2小时前</span>
+              <span>•</span>
+              <span>56条评论</span>
+            </div>
+          </div>
+
+          <div class="article-item">
+            <div class="article-title">分享我的远程工作经验，如何保持高效</div>
+            <div class="article-meta">
+              <span>3小时前</span>
+              <span>•</span>
+              <span>89条评论</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <div class="card-actions">
+            <button class="action-btn">⭐ 收藏</button>
+            <button class="action-btn">🔄 刷新</button>
+            <button class="action-btn">📋 更多</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 36氪 卡片 -->
+      <div class="source-card">
+        <div class="card-header">
+          <div class="source-info">
+            <div class="source-icon" style="background: #0080FF;">📰</div>
+            <div class="source-details">
+              <h3>36氪</h3>
+              <div class="source-meta">
+                <span>更新于 10分钟前</span>
+                <span>•</span>
+                <span>86条新内容</span>
+              </div>
+            </div>
+          </div>
+          <button class="follow-btn">关注</button>
+        </div>
+
+        <div class="card-body">
+          <div class="article-item">
+            <div class="article-title">OpenAI 完成 1100 亿美元融资，估值达 8400 亿</div>
+            <div class="article-meta">
+              <span>556万热度</span>
+              <span>•</span>
+              <span>3小时前</span>
+            </div>
+          </div>
+
+          <div class="article-item">
+            <div class="article-title">阿里云宣布AI算力价格上调34%，行业震动</div>
+            <div class="article-meta">
+              <span>328万热度</span>
+              <span>•</span>
+              <span>5小时前</span>
+            </div>
+          </div>
+
+          <div class="article-item">
+            <div class="article-title">特斯拉市值突破1万亿美元，马斯克重回首富</div>
+            <div class="article-meta">
+              <span>256万热度</span>
+              <span>•</span>
+              <span>6小时前</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <div class="card-actions">
+            <button class="action-btn">⭐ 收藏</button>
+            <button class="action-btn">🔄 刷新</button>
+            <button class="action-btn">📋 更多</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- IT之家 卡片 -->
+      <div class="source-card">
+        <div class="card-header">
+          <div class="source-info">
+            <div class="source-icon" style="background: #D32F2F;">🖥️</div>
+            <div class="source-details">
+              <h3>IT之家</h3>
+              <div class="source-meta">
+                <span>更新于 5分钟前</span>
+                <span>•</span>
+                <span>152条新内容</span>
+              </div>
+            </div>
+          </div>
+          <button class="follow-btn">关注</button>
+        </div>
+
+        <div class="card-body">
+          <div class="article-item">
+            <div class="article-title">英伟达发布 RTX 5090，性能提升80%</div>
+            <div class="article-meta">
+              <span>2小时前</span>
+              <span>•</span>
+              <span>456条评论</span>
+            </div>
+          </div>
+
+          <div class="article-item">
+            <div class="article-title">微软发布 Windows 12 预览版，全新UI设计</div>
+            <div class="article-meta">
+              <span>4小时前</span>
+              <span>•</span>
+              <span>328条评论</span>
+            </div>
+          </div>
+
+          <div class="article-item">
+            <div class="article-title">苹果 M4 芯片跑分曝光，性能碾压Intel</div>
+            <div class="article-meta">
+              <span>5小时前</span>
+              <span>•</span>
+              <span>289条评论</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <div class="card-actions">
+            <button class="action-btn">⭐ 收藏</button>
+            <button class="action-btn">🔄 刷新</button>
+            <button class="action-btn">📋 更多</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- GitHub Trending 卡片 -->
+      <div class="source-card">
+        <div class="card-header">
+          <div class="source-info">
+            <div class="source-icon" style="background: #24292E;">💻</div>
+            <div class="source-details">
+              <h3>GitHub Trending</h3>
+              <div class="source-meta">
+                <span>更新于 30分钟前</span>
+                <span>•</span>
+                <span>25个新项目</span>
+              </div>
+            </div>
+          </div>
+          <button class="follow-btn following">已关注</button>
+        </div>
+
+        <div class="card-body">
+          <div class="article-item">
+            <div class="article-title">microsoft/generative-ai-for-beginners</div>
+            <div class="article-meta">
+              <span>⭐ 12.3k stars</span>
+              <span>•</span>
+              <span>Python</span>
+            </div>
+          </div>
+
+          <div class="article-item">
+            <div class="article-title">openai/whisper-large-v3</div>
+            <div class="article-meta">
+              <span>⭐ 8.6k stars</span>
+              <span>•</span>
+              <span>Python</span>
+            </div>
+          </div>
+
+          <div class="article-item">
+            <div class="article-title">vercel/next.js-14-guide</div>
+            <div class="article-meta">
+              <span>⭐ 6.2k stars</span>
+              <span>•</span>
+              <span>TypeScript</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <div class="card-actions">
+            <button class="action-btn">⭐ 收藏</button>
+            <button class="action-btn">🔄 刷新</button>
+            <button class="action-btn">📋 更多</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 知乎热榜 卡片 -->
+      <div class="source-card">
+        <div class="card-header">
+          <div class="source-info">
+            <div class="source-icon" style="background: #0066FF;">💙</div>
+            <div class="source-details">
+              <h3>知乎热榜</h3>
+              <div class="source-meta">
+                <span>更新于 10分钟前</span>
+                <span>•</span>
+                <span>50条热榜</span>
+              </div>
+            </div>
+          </div>
+          <button class="follow-btn">关注</button>
+        </div>
+
+        <div class="card-body">
+          <div class="article-item">
+            <div class="article-title">如何评价 2024 年高考数学试卷难度？</div>
+            <div class="article-meta">
+              <span>1256万热度</span>
+              <span>•</span>
+              <span>3.2k回答</span>
+            </div>
+          </div>
+
+          <div class="article-item">
+            <div class="article-title">程序员35岁以后都去哪了？</div>
+            <div class="article-meta">
+              <span>986万热度</span>
+              <span>•</span>
+              <span>2.8k回答</span>
+            </div>
+          </div>
+
+          <div class="article-item">
+            <div class="article-title">AI会取代程序员吗？</div>
+            <div class="article-meta">
+              <span>756万热度</span>
+              <span>•</span>
+              <span>1.9k回答</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <div class="card-actions">
+            <button class="action-btn">⭐ 收藏</button>
+            <button class="action-btn">🔄 刷新</button>
+            <button class="action-btn">📋 更多</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 微博热搜 卡片 -->
+      <div class="source-card">
+        <div class="card-header">
+          <div class="source-info">
+            <div class="source-icon" style="background: #E6162D;">🔴</div>
+            <div class="source-details">
+              <h3>微博热搜</h3>
+              <div class="source-meta">
+                <span>更新于 5分钟前</span>
+                <span>•</span>
+                <span>50条热搜</span>
+              </div>
+            </div>
+          </div>
+          <button class="follow-btn">关注</button>
+        </div>
+
+        <div class="card-body">
+          <div class="article-item">
+            <div class="article-title">#高考成绩公布#</div>
+            <div class="article-meta">
+              <span>🔥 2568万热度</span>
+              <span>•</span>
+              <span>12.3万讨论</span>
+            </div>
+          </div>
+
+          <div class="article-item">
+            <div class="article-title">#2024欧洲杯#</div>
+            <div class="article-meta">
+              <span>🔥 1986万热度</span>
+              <span>•</span>
+              <span>8.9万讨论</span>
+            </div>
+          </div>
+
+          <div class="article-item">
+            <div class="article-title">#AI绘画惊艳作品#</div>
+            <div class="article-meta">
+              <span>🔥 1256万热度</span>
+              <span>•</span>
+              <span>5.6万讨论</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <div class="card-actions">
+            <button class="action-btn">⭐ 收藏</button>
+            <button class="action-btn">🔄 刷新</button>
+            <button class="action-btn">📋 更多</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // 交互效果
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+
+    document.querySelectorAll('.category-chip').forEach(chip => {
+      chip.addEventListener('click', function() {
+        document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+
+    document.querySelectorAll('.follow-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        if (this.classList.contains('following')) {
+          this.classList.remove('following');
+          this.textContent = '关注';
+        } else {
+          this.classList.add('following');
+          this.textContent = '已关注';
+        }
+      });
+    });
+
+    document.querySelectorAll('.article-item').forEach(item => {
+      item.addEventListener('click', function() {
+        alert('跳转到文章详情页');
+      });
+    });
+
+    // 刷新按钮动画
+    document.querySelectorAll('.icon-btn, .action-btn').forEach(btn => {
+      if (btn.textContent.includes('🔄')) {
+        btn.addEventListener('click', function() {
+          this.style.transform = 'rotate(360deg)';
+          setTimeout(() => {
+            this.style.transform = 'rotate(0deg)';
+          }, 1000);
+        });
+      }
+    });
+  </script>
+</body>
+</html>
