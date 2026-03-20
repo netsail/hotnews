@@ -4,16 +4,16 @@
 [![Node](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen.svg)](https://nodejs.org)
 [![Vue](https://img.shields.io/badge/vue-3.4+-brightgreen.svg)](https://vuejs.org)
 
-> **优雅的实时新闻聚合平台** - 支持多源聚合、个性化定制、实时更新
+> **优雅的实时新闻聚合平台** - 独立设计、独立开发的开源项目
 
-[English](./README.md) | [简体中文](./README.zh-CN.md) | [在线演示](https://hotnews.example.com)
+[在线演示](https://hotnews.example.com) | [设计文档](./docs/DESIGN.md) | [交互原型](./docs/prototype.html)
 
 ---
 
 ## ✨ 核心特性
 
 - 🎨 **优雅的UI设计** - 现代化卡片式布局，极致阅读体验
-- 🔄 **实时更新** - WebSocket推送，第一时间获取最新资讯
+- 🔄 **实时更新** - 持续抓取最新资讯，保证信息时效性
 - 🔐 **多平台登录** - 支持 GitHub、Google OAuth 快速登录
 - 📌 **个性化定制** - 关注感兴趣的内容源，打造专属首页
 - 🔥 **智能推荐** - 基于热度和时间衰减的排序算法
@@ -26,35 +26,74 @@
 
 ## 📸 预览
 
-![HotNews Preview](./docs/images/preview.png)
+### 桌面端
+
+```
+┌──────────────────────────────────────────────┐
+│  🔥 HotNews   更多  关注  最热  实时    [登录] │
+├──────────────────────────────────────────────┤
+│ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌──────┐│
+│ │  V2EX   │ │  36氪   │ │ IT之家  │ │ 虎嗅 ││
+│ │  128条  │ │  86条   │ │  152条  │ │ 56条 ││
+│ └─────────┘ └─────────┘ └─────────┘ └──────┘│
+│ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌──────┐│
+│ │ GitHub  │ │  知乎   │ │  掘金   │ │ 微博 ││
+│ │  25个   │ │  50条   │ │  15篇   │ │ 50条 ││
+│ └─────────┘ └─────────┘ └─────────┘ └──────┘│
+└──────────────────────────────────────────────┘
+```
+
+### 移动端
+
+```
+┌─────────────────┐
+│  🔥 HotNews  [≡]│
+├─────────────────┤
+│  更多  关注  ... │
+├─────────────────┤
+│  ┌───────────┐  │
+│  │   V2EX    │  │
+│  │  128条    │  │
+│  └───────────┘  │
+│  ┌───────────┐  │
+│  │   36氪    │  │
+│  │   86条    │  │
+│  └───────────┘  │
+└─────────────────┘
+```
 
 ---
 
-## 🎯 功能清单
+## 🎯 功能特性
 
-### 核心功能
+### 导航系统
 
-- [x] GitHub OAuth 登录
-- [x] Google OAuth 登录
-- [x] 多源新闻聚合（30+）
-- [x] 实时新闻推送（WebSocket）
-- [x] 个性化关注页面
-- [x] 最热/实时/更多导航
-- [x] 文章收藏功能
-- [x] 阅读历史记录
-- [x] 全文搜索
-- [x] 自适应抓取间隔（防封禁）
-- [x] 智能缓存（30分钟）
+- **更多** - 全部分类和内容源
+- **关注** - 个性化关注内容（需登录）
+- **最热** - 热度排行榜
+- **实时** - 最新发布动态
 
-### 内容源（持续增加中）
+### 用户系统
 
-| 分类 | 内容源 | 状态 |
-|------|--------|------|
-| **科技** | V2EX、36氪、IT之家、InfoQ、少数派 | ✅ |
-| **财经** | 虎嗅、钛媒体、雪球 | ✅ |
-| **国际** | BBC、CNN、Reuters | ✅ |
-| **开发** | GitHub Trending、Hacker News、掘金 | ✅ |
-| **生活** | 知乎、微博热搜、豆瓣 | ✅ |
+- GitHub OAuth 登录
+- Google OAuth 登录
+- JWT Token 认证
+- 用户资料管理
+
+### 内容系统
+
+- 30+优质新闻源
+- RSS/API/爬虫三种抓取方式
+- 智能抓取间隔（自适应防封禁）
+- 内容去重算法
+- 热度计算算法
+
+### 个性化功能
+
+- 关注内容源
+- 文章收藏
+- 阅读历史
+- 个性化首页
 
 ---
 
@@ -64,8 +103,8 @@
 
 - Node.js >= 20.0.0
 - pnpm >= 8.0.0
-- PostgreSQL >= 15 (可选，支持 SQLite/MySQL)
-- Redis >= 7.0 (可选)
+- PostgreSQL >= 15（可选）
+- Redis >= 7.0（可选）
 
 ### 安装
 
@@ -74,51 +113,37 @@
 git clone https://github.com/netsail/hotnews.git
 cd hotnews
 
-# 启用 corepack
-corepack enable
-
 # 安装依赖
 pnpm install
+
+# 配置环境变量
+cp .env.example .env
 ```
 
 ### 配置
 
-```bash
-# 复制环境变量模板
-cp .env.example .env
-
-# 编辑 .env 文件
-nano .env
-```
-
-**.env 配置示例：**
+编辑 `.env` 文件：
 
 ```bash
-# GitHub OAuth (必填)
+# GitHub OAuth
 GITHUB_CLIENT_ID=your_github_client_id
 GITHUB_CLIENT_SECRET=your_github_client_secret
 
-# Google OAuth (必填)
-GOOGLE_CLIENT_ID=your_google_client_id.apps.googleusercontent.com
+# Google OAuth
+GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
 
-# JWT密钥 (必填，随机字符串至少32位)
-JWT_SECRET=your_random_jwt_secret_at_least_32_characters_long
+# JWT密钥（至少32位）
+JWT_SECRET=your_random_jwt_secret_at_least_32_chars
 
-# 数据库 (可选，默认使用SQLite)
-DATABASE_URL=postgresql://user:password@localhost:5432/hotnews
+# 数据库
+DATABASE_URL=postgresql://localhost:5432/hotnews
 
-# Redis (可选)
+# Redis
 REDIS_URL=redis://localhost:6379
 
-# 应用URL
+# 域名
 BASE_URL=http://localhost:3000
-
-# 初始化数据库 (首次运行设为true)
-INIT_DATABASE=true
-
-# 启用缓存
-ENABLE_CACHE=true
 ```
 
 ### 运行
@@ -141,10 +166,11 @@ pnpm start
 ## 📖 文档
 
 - [快速开始](./docs/getting-started.md)
-- [配置指南](./docs/configuration.md)
-- [添加新内容源](./docs/add-source.md)
-- [部署指南](./docs/deployment.md)
+- [设计文档](./docs/DESIGN.md) - 完整设计系统
+- [设计资产](./docs/ASSETS.md) - Logo、图标、物料
+- [交互原型](./docs/prototype.html) - 在线预览
 - [API文档](./docs/api.md)
+- [部署指南](./docs/deployment.md)
 - [贡献指南](./CONTRIBUTING.md)
 
 ---
@@ -169,13 +195,6 @@ pnpm start
 - **任务队列**: Bull
 - **HTML解析**: Cheerio
 
-### 基础设施
-
-- **容器化**: Docker + Docker Compose
-- **反向代理**: Nginx
-- **进程管理**: PM2
-- **CI/CD**: GitHub Actions
-
 ---
 
 ## 🏗️ 项目结构
@@ -183,24 +202,102 @@ pnpm start
 ```
 hotnews/
 ├── apps/
-│   ├── web/                 # 前端应用 (Nuxt 3)
+│   ├── web/                 # 前端应用
 │   │   ├── components/      # Vue组件
 │   │   ├── pages/           # 页面路由
-│   │   ├── composables/     # 组合式函数
 │   │   └── assets/          # 静态资源
-│   └── server/              # 后端服务 (Express)
+│   └── server/              # 后端服务
 │       ├── routes/          # API路由
 │       ├── services/        # 业务逻辑
 │       ├── crawlers/        # 爬虫模块
 │       └── middleware/      # 中间件
 ├── packages/
-│   ├── shared/              # 共享代码
-│   │   ├── types/           # TypeScript类型
-│   │   └── utils/           # 工具函数
-│   └── database/            # 数据库Schema
+│   └── shared/              # 共享类型
+│       ├── types.ts         # 类型定义
+│       └── sources.ts       # 内容源定义
 ├── docs/                    # 文档
-├── docker/                  # Docker配置
 └── scripts/                 # 脚本工具
+```
+
+---
+
+## 🎨 设计系统
+
+### 色彩
+
+- **主色**: #3B82F6（蓝色）
+- **成功**: #10B981（绿色）
+- **警告**: #F59E0B（橙色）
+- **错误**: #EF4444（红色）
+
+### 字体
+
+- **主字体**: -apple-system, PingFang SC
+- **代码字体**: SF Mono, Monaco
+
+### 响应式
+
+- **手机**: <768px（1列卡片）
+- **平板**: 768-1024px（2列卡片）
+- **桌面**: >1024px（3-4列卡片）
+
+---
+
+## 📊 支持的内容源（30+）
+
+### 科技类
+
+- ✅ V2EX
+- ✅ 36氪
+- ✅ IT之家
+- ✅ InfoQ
+- ✅ 少数派
+
+### 开发者
+
+- ✅ GitHub Trending
+- ✅ Hacker News
+- ✅ 掘金
+
+### 财经类
+
+- ✅ 虎嗅
+- ✅ 钛媒体
+
+### 生活类
+
+- ✅ 知乎热榜
+- ✅ 微博热搜
+- ✅ 豆瓣
+
+---
+
+## 🚀 部署
+
+### Docker Compose（推荐）
+
+```bash
+# 一键启动
+docker-compose up -d
+
+# 包含服务：应用 + 数据库 + Redis + Nginx
+```
+
+### Cloudflare Pages
+
+```bash
+# 构建命令
+pnpm build
+
+# 输出目录
+dist/output/public
+```
+
+### Vercel
+
+```bash
+# 一键部署
+vercel
 ```
 
 ---
@@ -211,47 +308,9 @@ hotnews/
 
 ### 添加新内容源
 
-1. 在 `apps/server/crawlers/` 创建爬虫文件
-2. 在 `packages/shared/sources/` 注册内容源
+1. 在 `packages/shared/src/sources.ts` 添加定义
+2. 在 `apps/server/src/crawlers/` 实现爬虫
 3. 提交 Pull Request
-
-示例：[添加新内容源教程](./docs/add-source.md)
-
----
-
-## 📊 性能指标
-
-| 指标 | 目标值 | 实际值 |
-|------|--------|--------|
-| 页面加载时间 | < 2s | ~1.2s |
-| API响应时间 | < 500ms | ~280ms |
-| 抓取成功率 | > 95% | 98.5% |
-| 缓存命中率 | > 80% | 87% |
-
----
-
-## 🗺️ 路线图
-
-### v1.0 (当前)
-
-- [x] 基础功能实现
-- [x] 多平台OAuth登录
-- [x] 30+内容源
-- [x] 实时推送
-
-### v1.1 (计划中)
-
-- [ ] 移动端APP (React Native)
-- [ ] 多语言支持 (i18n)
-- [ ] AI智能推荐
-- [ ] 评论系统
-
-### v2.0 (未来)
-
-- [ ] 去中心化部署
-- [ ] 区块链激励
-- [ ] RSS订阅生成
-- [ ] 内容创作平台
 
 ---
 
@@ -261,18 +320,23 @@ hotnews/
 
 ---
 
-## 💬 社区
+## 📞 联系方式
 
-- [GitHub Discussions](https://github.com/netsail/hotnews/discussions)
-- [Discord](https://discord.gg/hotnews)
-- [Twitter](https://twitter.com/hotnews_app)
+- **GitHub**: https://github.com/netsail/hotnews
+- **Issues**: https://github.com/netsail/hotnews/issues
+- **Discussions**: https://github.com/netsail/hotnews/discussions
 
 ---
 
 ## 🙏 致谢
 
-- [ourongxing/newsnow](https://github.com/ourongxing/newsnow) - 项目灵感来源
-- 所有贡献者和用户
+感谢以下开源项目：
+- Vue.js
+- Nuxt.js
+- Express
+- TailwindCSS
+- Prisma
+- 以及所有贡献者和用户
 
 ---
 
